@@ -1,16 +1,13 @@
 #include <stdio.h>
 
-int main () {
-	int a;
-	scanf("%d", &a);
-	int n;
-	int k;
-	int s = 0;
-	for (n=a; n != 0; n = n / 10){
-		k = n % 10;
-		if (k > s){
-			s = k;
-		}
-	}
-	printf("%d \n", s);
+int main() {
+    int n,a,k,s;
+    scanf("%d",&a);
+    for (n=a, s=0; n!=0; n=n/10) { 
+        k=n%10; 
+        if (k>s) 
+        s=k;
+    }
+    printf("%d\n%d\n", s,k);
 }
+//выводит первую цифру числа и наибольшую цифру в числе
