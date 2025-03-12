@@ -35,4 +35,9 @@ void shaker_sort(int arr[], int n, int *swaps, int *comparisons) {
         left++;
     }
 }
+int main(){
+
+    int a[3] = {4, 0};
+    shaker_sort(a[3]);
+}
 //AR
