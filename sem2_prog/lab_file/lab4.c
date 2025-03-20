@@ -1,80 +1,102 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
+#include <locale.h>
 
 #define MAX_LINE_LENGTH 1000
 
-// Функция для реверса строки
-void reverse_string(char *str) {
-    int length = strlen(str);
+// Функция для реверса строки широких символов
+void reverse_wstring(wchar_t *str) {
+    int length = wcslen(str);
     for (int i = 0; i < length / 2; i++) {
-        char temp = str[i];
+        wchar_t temp = str[i];
         str[i] = str[length - i - 1];
         str[length - i - 1] = temp;
     }
 }
 
-int main() {
-    char filename[] = "output.txt";
-    FILE *file;
-    char line[MAX_LINE_LENGTH];
-    char **lines = NULL;
-    int line_count = 0;
-
-    // Создаем файл и записываем в него произвольные строки
-    file = fopen(filename, "w");
-    if (file == NULL) {
-        perror("Ошибка открытия файла");
-        return EXIT_FAILURE;
+// Функция для обработки файла с заранее заданным текстом
+void process_existing_file(const wchar_t *input_filename, const wchar_t *output_filename) {
+    FILE *input_file = fopen("existing_input.txt", "r");
+    if (input_file == NULL) {
+        fwprintf(stderr, L"Ошибка открытия файла '%ls' для чтения.\n", input_filename);
+        return;
     }
 
-    fprintf(file, "Первая строка\n");
-    fprintf(file, "Вторая строка\n");
-    fprintf(file, "Третья строка\n");
-    fprintf(file, "Четвертая строка\n");
-
-    fclose(file);
-
-    // Открываем файл для чтения
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        perror("Ошибка открытия файла");
-        return EXIT_FAILURE;
+    FILE *output_file = fopen("existing_output.txt", "w");
+    if (output_file == NULL) {
+        fwprintf(stderr, L"Ошибка открытия файла '%ls' для записи.\n", output_filename);
+        fclose(input_file);
+        return;
     }
 
-    // Читаем строки из файла и сохраняем их в динамический массив
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+    wchar_t line[MAX_LINE_LENGTH];
+    while (fgetws(line, MAX_LINE_LENGTH, input_file) != NULL) {
         // Убираем символ новой строки
-        line[strcspn(line, "\n")] = '\0';
+        line[wcslen(line) - 1] = L'\0';
 
-        // Выделяем память для новой строки и копируем ее
-        lines = realloc(lines, (line_count + 1) * sizeof(char *));
-        lines[line_count] = malloc((strlen(line) + 1) * sizeof(char));
-        strcpy(lines[line_count], line);
+        // Реверсируем строку
+        reverse_wstring(line);
 
-        line_count++;
+        // Записываем реверсированную строку в файл
+        fputws(line, output_file);
+        fputws(L"\n", output_file);
     }
 
-    fclose(file);
+    fclose(input_file);
+    fclose(output_file);
 
-    // Открываем файл для записи (перезаписываем)
-    file = fopen(filename, "w");
-    if (file == NULL) {
-        perror("Ошибка открытия файла");
-        return EXIT_FAILURE;
+    wprintf(L"Файл '%ls' успешно обработан. Реверсированные строки записаны в '%ls'.\n", input_filename, output_filename);
+}
+
+// Функция для ввода строк через консоль до стоп-символа
+void input_strings_until_stop(const wchar_t *output_filename) {
+    FILE *output_file = fopen("console_output.txt", "w");
+    if (output_file == NULL) {
+        fwprintf(stderr, L"Ошибка открытия файла '%ls' для записи.\n", output_filename);
+        return;
     }
 
-    // Переписываем строки в обратном порядке
-    for (int i = line_count - 1; i >= 0; i--) {
-        reverse_string(lines[i]);
-        fprintf(file, "%s\n", lines[i]);
-        free(lines[i]); // Освобождаем память
+    wprintf(L"Введите строки (для завершения введите 'STOP'):\n");
+
+    wchar_t line[MAX_LINE_LENGTH];
+    while (1) {
+        if (fgetws(line, MAX_LINE_LENGTH, stdin) == NULL) {
+            fwprintf(stderr, L"Ошибка ввода строки.\n");
+            break;
+        }
+
+        // Убираем символ новой строки
+        line[wcslen(line) - 1] = L'\0';
+
+        // Проверяем на стоп-символ
+        if (wcscmp(line, L"STOP") == 0) {
+            break;
+        }
+
+        // Реверсируем строку
+        reverse_wstring(line);
+
+        // Записываем реверсированную строку в файл
+        fputws(line, output_file);
+        fputws(L"\n", output_file);
     }
 
-    free(lines); // Освобождаем массив указателей
-    fclose(file);
+    fclose(output_file);
 
-    printf("Строки успешно переписаны в обратном порядке.\n");
+    wprintf(L"Строки успешно записаны в файл '%ls'.\n", output_filename);
+}
+
+int main() {
+    // Устанавливаем локаль для корректной работы с UTF-8
+    setlocale(LC_ALL, "Russian_Russia.65001");
+
+    // Обработка файла с заранее заданным текстом
+    process_existing_file(L"existing_input.txt", L"existing_output.txt");
+
+    // Ввод строк через консоль до стоп-символа
+    input_strings_until_stop(L"console_output.txt");
 
     return EXIT_SUCCESS;
 }
