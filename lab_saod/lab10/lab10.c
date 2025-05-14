@@ -1,154 +1,134 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
-int comparisons = 0;
-int swaps = 0;
+// Глобальные счетчики операций
+int actual_swaps = 0;    // Фактическое количество пересылок (M)
+int actual_comparisons = 0; // Фактическое количество сравнений (C)
 
-// Функция для обмена элементов
-void swap(int* a, int* b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-    swaps += 3; // Учитываем 3 операции пересылки
-}
+// Функция построения (L, R)-пирамиды
+void buildHeap(int array[], int left, int right) {
+    int parent = left;
+    int child = 2 * left;
+    int root_value = array[left - 1]; // В псевдокоде индексация с 1, у нас с 0
+    actual_swaps++; // Сохранение корня
 
-// Просеивание вниз (sift down)
-void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-
-    comparisons++;
-    if (left < n && arr[left] > arr[largest]) {
-        largest = left;
+    while (child <= right) {
+        actual_comparisons++; // Проверка child <= right
+        if (child < right) {
+            actual_comparisons++; // Сравнение дочерних элементов
+            if (array[child - 1] < array[child]) {
+                child++;
+            }
+        }
+        
+        actual_comparisons++; // Сравнение корня с наибольшим потомком
+        if (root_value >= array[child - 1]) {
+            break;
+        }
+        
+        array[parent - 1] = array[child - 1];
+        actual_swaps++; // Перемещение потомка вверх
+        parent = child;
+        child = 2 * parent;
     }
-
-    comparisons++;
-    if (right < n && arr[right] > arr[largest]) {
-        largest = right;
-    }
-
-    if (largest != i) {
-        swap(&arr[i], &arr[largest]);
-        heapify(arr, n, largest);
-    }
-}
-
-// Построение пирамиды
-void buildHeap(int arr[], int n) {
-    for (int i = n / 2 - 1; i >= 0; i--) {
-        heapify(arr, n, i);
-    }
+    
+    array[parent - 1] = root_value;
+    actual_swaps++; // Восстановление корня
 }
 
 // Пирамидальная сортировка
-void heapSort(int arr[], int n) {
-    buildHeap(arr, n);
-    for (int i = n - 1; i > 0; i--) {
-        swap(&arr[0], &arr[i]);
-        heapify(arr, i, 0);
-    }
-}
-
-// Генерация массива
-void generateArray(int arr[], int n, int type) {
-    switch (type) {
-        case 0: // Убывающий
-            for (int i = 0; i < n; i++) arr[i] = n - i;
-            break;
-        case 1: // Случайный
-            for (int i = 0; i < n; i++) arr[i] = rand() % 1000;
-            break;
-        case 2: // Возрастающий
-            for (int i = 0; i < n; i++) arr[i] = i + 1;
-            break;
-    }
-}
-
-// Подсчет контрольной суммы
-int controlSum(int arr[], int n) {
-    int sum = 0;
-    for (int i = 0; i < n; i++) sum += arr[i];
-    return sum;
-}
-
-// Подсчет числа серий
-int countSeries(int arr[], int n) {
-    int series = 1;
-    for (int i = 1; i < n; i++) {
-        if (arr[i] < arr[i - 1]) series++;
-    }
-    return series;
-}
-
-// Вывод таблицы для построения пирамиды
-void printHeapBuildTable() {
-    int sizes[] = {100, 200, 300, 400, 500};
-    printf("Трудоемкость построения пирамиды\n");
-    printf("+------+----------------+-------------------+-------------------+-------------------+\n");
-    printf("|  N   | M+C теоретич.  | Mф+Сф (убыв.)     | Mф+Сф (случ.)     | Mф+Сф (возр.)     |\n");
-    printf("+------+----------------+-------------------+-------------------+-------------------+\n");
-
-    for (int i = 0; i < 5; i++) {
-        int n = sizes[i];
-        int total_ops[3] = {0};
-
-        for (int type = 0; type < 3; type++) {
-            int arr[n];
-            generateArray(arr, n, type);
-            
-            comparisons = 0;
-            swaps = 0;
-            buildHeap(arr, n);
-            
-            total_ops[type] = comparisons + swaps;
-        }
-
-        printf("| %4d | %14d | %17d | %17d | %17d |\n", 
-               n, 2 * n, total_ops[0], total_ops[1], total_ops[2]);
-    }
-    printf("+------+----------------+-------------------+-------------------+-------------------+\n");
-}
-
-// Вывод таблицы для сортировки
-void printHeapSortTable() {
-    int sizes[] = {100, 200, 300, 400, 500};
-    printf("Трудоемкость пирамидальной сортировки\n");
-    printf("+------+------------------+-------------------+------------------+\n");
-    printf("|  N   | Убывающий массив | Возрастающий массив | Случайный массив |\n");
-    printf("+------+------------------+-------------------+------------------+\n");
-
-    for (int i = 0; i < 5; i++) {
-        int n = sizes[i];
-        int total_ops[3] = {0};
-
-        for (int type = 0; type < 3; type++) {
-            int arr[n];
-            generateArray(arr, n, type);
-            
-            comparisons = 0;
-            swaps = 0;
-            heapSort(arr, n);
-            
-            total_ops[type] = comparisons + swaps;
-        }
-
-        printf("| %4d | %16d | %17d | %16d |\n", 
-               n, total_ops[0], total_ops[2], total_ops[1]);
-    }
-    printf("+------+------------------+-------------------+------------------+\n");
+void heapSort(int array[], int size) {
+    actual_swaps = 0;
+    actual_comparisons = 0;
     
+    // Построение пирамиды
+    int start = size / 2;
+    while (start > 0) {
+        buildHeap(array, start, size);
+        start--;
+    }
+    
+    // Сортировка
+    int end = size;
+    while (end > 1) {
+        // Обмен первого и последнего элементов
+        int temp = array[0];
+        array[0] = array[end - 1];
+        array[end - 1] = temp;
+        actual_swaps += 3; // 3 операции при обмене
+        
+        end--;
+        buildHeap(array, 1, end);
+    }
+}
+
+// Теоретические оценки трудоемкости
+void theoreticalEstimates(int size, int *theoretical_comparisons, int *theoretical_swaps) {
+    double log2_size = log2(size);
+    *theoretical_comparisons = (int)(2 * size * log2_size + size + 2);
+    *theoretical_swaps = (int)(size * log2_size + 6.5 * size - 4);
+}
+
+// Генерация массивов
+void generateDecreasingArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = size - i;
+    }
+}
+
+void generateRandomArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = rand() % 1000;
+    }
+}
+
+void generateIncreasingArray(int array[], int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = i + 1;
+    }
 }
 
 int main() {
     srand(time(NULL));
     
-    printf("Исследование трудоемкости построения пирамиды:\n");
-    printHeapBuildTable();
+    int sizes[] = {100, 200, 300, 400, 500};
+    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
     
-    printf("\nИсследование трудоемкости пирамидальной сортировки:\n");
-    printHeapSortTable();
+    printf("Трудоемкость пирамидальной сортировки\n");
+    printf("| N    | Теория (C+M) | HeapSort (Мф+Сф) |\n");
+    printf("|      |              | Убыв. | Возр. | Случ. |\n");
+    printf("|------|--------------|-------|-------|-------|\n");
+    
+    for (int i = 0; i < num_sizes; i++) {
+        int size = sizes[i];
+        int *array = (int *)malloc(size * sizeof(int));
+        int theoretical_comparisons, theoretical_swaps;
+        
+        theoreticalEstimates(size, &theoretical_comparisons, &theoretical_swaps);
+        int total_theoretical = theoretical_comparisons + theoretical_swaps;
+        
+        // Убывающий массив
+        generateDecreasingArray(array, size);
+        heapSort(array, size);
+        int decreasing_total = actual_swaps + actual_comparisons;
+        
+        // Возрастающий массив
+        generateIncreasingArray(array, size);
+        heapSort(array, size);
+        int increasing_total = actual_swaps + actual_comparisons;
+        
+        // Случайный массив
+        generateRandomArray(array, size);
+        heapSort(array, size);
+        int random_total = actual_swaps + actual_comparisons;
+        
+        printf("| %-4d | %-12d | %-5d | %-5d | %-5d |\n", 
+               size, total_theoretical, decreasing_total, increasing_total, random_total);
+        
+        free(array);
+    }
     
     return 0;
 }

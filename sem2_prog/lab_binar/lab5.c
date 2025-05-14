@@ -78,13 +78,13 @@ void searchInFile() {
         
         switch (choice) {
             case 1:
-                if (strstr(abonent.name, searchTerm) != NULL) match = 1;
+                if (strcmp(abonent.name, searchTerm) == 0) match = 1;
                 break;
             case 2:
-                if (strstr(abonent.phone, searchTerm) != NULL) match = 1;
+                if (strcmp(abonent.phone, searchTerm) == 0) match = 1;
                 break;
             case 3:
-                if (strstr(abonent.address, searchTerm) != NULL) match = 1;
+                if (strcmp(abonent.address, searchTerm) == 0) match = 1;
                 break;
             default:
                 printf("Неверный выбор.\n");
