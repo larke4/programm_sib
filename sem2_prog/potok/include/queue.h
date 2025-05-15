@@ -4,7 +4,7 @@
 #include <pthread.h>
 
 #define MAX_MSG_LENGTH 128
-#define MAX_QUEUE_SIZE 10
+#define MAX_QUEUE_SIZE 15
 
 typedef struct {
     char message[MAX_MSG_LENGTH];
