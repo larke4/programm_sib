@@ -1,0 +1,12 @@
+# ninja log v6
+12	312	7690021468742369	CMakeFiles/keyboard_trainer.dir/main.c.obj	c6a26fed2cf91dbb
+33	343	7690021468954166	CMakeFiles/test_trainer.dir/test_keyboard_trainer.c.obj	492312bc8fc19a57
+22	374	7690021468822389	CMakeFiles/keyboard_trainer.dir/keyboard_trainer.c.obj	daf58ec6b062b39f
+43	385	7690021469072514	CMakeFiles/test_trainer.dir/keyboard_trainer.c.obj	a4e4e5c87f98d546
+386	555	7690021472473701	test_trainer.exe	ec324c66ac60f84f
+375	562	7690021472391202	keyboard_trainer.exe	b1ba9d167330bec5
+34	321	7690026638686756	CMakeFiles/test_trainer.dir/keyboard_trainer.c.obj	a4e4e5c87f98d546
+14	327	7690026638511424	CMakeFiles/keyboard_trainer.dir/keyboard_trainer.c.obj	daf58ec6b062b39f
+24	344	7690026638511424	CMakeFiles/test_trainer.dir/test_keyboard_trainer.c.obj	492312bc8fc19a57
+328	557	7690026641620759	keyboard_trainer.exe	b1ba9d167330bec5
+346	557	7690026641838186	test_trainer.exe	ec324c66ac60f84f

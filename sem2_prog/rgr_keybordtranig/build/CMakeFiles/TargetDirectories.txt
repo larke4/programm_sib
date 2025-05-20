@@ -1,0 +1,5 @@
+C:/Users/Георгий/labs/GIT/programm_sib/sem2_prog/rgr_keybordtranig/build/CMakeFiles/keyboard_trainer.dir
+C:/Users/Георгий/labs/GIT/programm_sib/sem2_prog/rgr_keybordtranig/build/CMakeFiles/test_trainer.dir
+C:/Users/Георгий/labs/GIT/programm_sib/sem2_prog/rgr_keybordtranig/build/CMakeFiles/test.dir
+C:/Users/Георгий/labs/GIT/programm_sib/sem2_prog/rgr_keybordtranig/build/CMakeFiles/edit_cache.dir
+C:/Users/Георгий/labs/GIT/programm_sib/sem2_prog/rgr_keybordtranig/build/CMakeFiles/rebuild_cache.dir
