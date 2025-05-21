@@ -195,46 +195,73 @@ void standard_mode_training(DifficultyLevel level) {
 }
 
 void dynamic_mode_training(DifficultyLevel level) {
-    printf("\nDynamic Mode: Text will change every 30 seconds\n");
-    time_t overall_start = time(NULL);
+    printf("\nDynamic Mode: Text will appear immediately after each input\n");
+    printf("Type '/q' at any time to quit.\n");
+
     int total_correct = 0, total_incorrect = 0;
+    double total_time = 0;
     int rounds = 0;
-    
-    while (difftime(time(NULL), overall_start) < 180) {
+
+    // Время на раунд в зависимости от уровня
+    int round_seconds;
+    switch(level) {
+        case BEGINNER:      round_seconds = 30; break;
+        case INTERMEDIATE:  round_seconds = 25; break;
+        case ADVANCED:      round_seconds = 20; break;
+        default:            round_seconds = 30; break;
+    }
+
+    while (1) {
         const char* text = get_random_text(level);
-        printf("\nNew text:\n%s\n", text);
-        
+        printf("\nNew text (%d seconds to complete):", round_seconds);
+        printf("\n%s\n", text);
+
         time_t round_start = time(NULL);
         char input[1024];
-        fgets(input, sizeof(input), stdin);
-        input[strcspn(input, "\n")] = '\0';
-        
+        if (!fgets(input, sizeof(input), stdin)) {
+            printf("Error reading input.\n");
+            break;
+        }
+
+        input[strcspn(input, "\n")] = '\0';  // Удалить символ новой строки
+
+        // Проверка на выход
+        if (strcmp(input, "/q") == 0) {
+            printf("Exiting Dynamic Mode early.\n");
+            break;
+        }
+
         time_t round_end = time(NULL);
         double round_time = difftime(round_end, round_start);
-        
+
+        // Если время больше лимита, засчитываем как ошибку
+        if (round_time > round_seconds) {
+            printf("Time limit exceeded!\n");
+        }
+
         TrainingStats stats = calculate_stats(text, input, round_time);
         print_stats(stats);
-        
+
         total_correct += stats.correct_chars;
         total_incorrect += stats.incorrect_chars;
+        total_time += round_time;
         rounds++;
-        
-        double time_left = 20 - round_time;
-        if (time_left > 0) sleep((unsigned int)time_left);
     }
-    
-    double total_time = difftime(time(NULL), overall_start);
-    TrainingStats final_stats = {
-        total_correct,
-        total_incorrect,
-        total_time,
-        (total_correct / total_time) * 60,
-        (double)total_correct / (total_correct + total_incorrect) * 100
-    };
-    
-    printf("\n--- Final Dynamic Mode Results ---\n");
-    print_stats(final_stats);
-    save_stats(final_stats);
+
+    if (rounds > 0) {
+        TrainingStats final_stats = {
+            total_correct,
+            total_incorrect,
+            total_time,
+            (total_correct / total_time) * 60,
+            (double)total_correct / (total_correct + total_incorrect) * 100
+        };
+        printf("\n--- Final Dynamic Mode Results ---\n");
+        print_stats(final_stats);
+        save_stats(final_stats);
+    } else {
+        printf("No rounds completed.\n");
+    }
 }
 
 void snake_mode_training() {

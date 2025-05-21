@@ -10,3 +10,10 @@
 24	344	7690026638511424	CMakeFiles/test_trainer.dir/test_keyboard_trainer.c.obj	492312bc8fc19a57
 328	557	7690026641620759	keyboard_trainer.exe	b1ba9d167330bec5
 346	557	7690026641838186	test_trainer.exe	ec324c66ac60f84f
+131	1892	7694426895447363	CMakeFiles/keyboard_trainer.dir/keyboard_trainer.c.obj	daf58ec6b062b39f
+311	1895	7694426897218597	CMakeFiles/test_trainer.dir/keyboard_trainer.c.obj	a4e4e5c87f98d546
+40	328	7694428231114301	CMakeFiles/test_trainer.dir/test_keyboard_trainer.c.obj	492312bc8fc19a57
+47	1038	7694428231165247	keyboard_trainer.exe	b1ba9d167330bec5
+329	1040	7694428233950409	test_trainer.exe	ec324c66ac60f84f
+71	2009	7695135764924671	CMakeFiles/test_trainer.dir/test_keyboard_trainer.c.obj	492312bc8fc19a57
+2010	2574	7695135784331722	test_trainer.exe	ec324c66ac60f84f
